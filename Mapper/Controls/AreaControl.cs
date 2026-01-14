@@ -33,8 +33,6 @@ namespace Glyphborn.Mapper.Controls
 
 		public AreaControl()
 		{
-			BackColor = Color.Red;
-			BorderStyle = BorderStyle.FixedSingle;
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
@@ -48,7 +46,6 @@ namespace Glyphborn.Mapper.Controls
 			g.Clear(BackColor);
 
 			// Draw debug border
-			g.DrawRectangle(Pens.Red, 0, 0, Width - 1, Height - 1);
 			g.DrawString($"Area: {Area.Width}×{Area.Height}", Font, Brushes.White, 5, 5);
 
 			for (int y = 0; y < Area.Height; y++)
@@ -93,7 +90,7 @@ namespace Glyphborn.Mapper.Controls
 					}
 					else
 					{
-						g.FillRectangle(Brushes.Black, rect);
+						continue;
 					}
 
 					// Grid

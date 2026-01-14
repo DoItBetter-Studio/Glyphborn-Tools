@@ -51,7 +51,7 @@ namespace Glyphborn.Mapper.Editor
 				Maps[x, y] != null;
 		}
 
-		public void SetMap(int x, int y, MapDocument map)
+		public void SetMap(int x, int y, MapDocument? map)
 		{
 			if (x < 0 || y < 0 || x >= Width || y >= Height)
 				return;

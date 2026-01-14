@@ -8,12 +8,15 @@ namespace Glyphborn.Mapper.Editor
 {
 	public static class AreaExporter
 	{
-		private const uint MAGIC_GEOMETRY = 0x474D4247; // "GBMG"
-		private const uint MAGIC_COLLISION = 0x434D4247; // "GBMC"
+		private const uint MAGIC_GEOMETRY	= 0x474D4247; // "GBMG"
+		private const uint MAGIC_COLLISION	= 0x434D4247; // "GBMC"
+		private const uint MAGIC_TILESETS	= 0x53544C47;  // "GBTS"
+
 
 		private const ushort VERSION = 1;
 		private static string DataRoot => Path.Combine(AppContext.BaseDirectory, "../..", "data");
-		private static string Maps => Path.Combine(DataRoot, "maps");
+		private static string Layouts => Path.Combine(DataRoot, "layouts");
+		private static string Tilesets => Path.Combine(DataRoot, "tilesets");
 
 
 		public static bool ExportBinary(AreaDocument doc)
@@ -22,12 +25,110 @@ namespace Glyphborn.Mapper.Editor
 			if (doc.Width > byte.MaxValue || doc.Height > byte.MaxValue)
 				throw new InvalidDataException("Area dimensions exceed storage limits (max 255).");
 
+			if (!WriteTilesets(doc))
+				return false;
 			if (!WriteGeometry(doc))
 				return false;
 			if (!WriteCollision(doc))
 				return false;
 
 			return true;
+		}
+
+		private static bool WriteTilesets(AreaDocument doc)
+		{
+			bool result = false;
+
+			try
+			{
+				for (int i = 0; i < doc.Tilesets.Count; i++)
+				{
+					var tileset = doc.Tilesets[i];
+					string tilesetPath = Resolve(tileset);
+					var dir = Path.GetDirectoryName(tilesetPath) ?? Tilesets;
+					if (!Directory.Exists(dir))
+						Directory.CreateDirectory(dir);
+
+					var name = tilesetPath.ToLower().Replace(' ', '_').Replace('-', '_');
+
+					using (var fs = new FileStream(name, FileMode.Create))
+					using (var bw = new BinaryWriter(fs))
+					{
+						bw.Write(MAGIC_TILESETS);
+						bw.Write(VERSION);
+						bw.Write((ushort) tileset.Tiles.Count);
+
+						foreach (var tile in tileset.Tiles)
+						{
+							WriteTile(bw, tile);
+						}
+					}
+				}
+
+				result = true;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+				result = false;
+			}
+
+			return result;
+		}
+
+		private static string Resolve(Tileset tileset)
+		{
+			string folder = tileset.Type switch
+			{
+				TilesetType.Regional => "regional",
+				TilesetType.Local => "local",
+				TilesetType.Interior => "interior",
+				_ => throw new ArgumentOutOfRangeException()
+			};
+
+			return Path.Combine(Tilesets, folder, $"{tileset.Name}.bin");
+		}
+
+		private static void WriteTile(BinaryWriter bw, TileDefinition tile)
+		{
+			if (tile.Primitive != null)
+			{
+				// Mesh Data
+				bw.Write((uint) tile.Primitive.Mesh.Vertices.Length);
+
+				foreach (var v in tile.Primitive.Mesh.Vertices)
+				{
+					bw.Write(v.Position.x);
+					bw.Write(v.Position.y);
+					bw.Write(v.Position.z);
+					bw.Write(v.UV.x);
+					bw.Write(v.UV.y);
+				}
+
+				bw.Write((uint) tile.Primitive.Mesh.Indices.Length);
+
+				foreach (var idx in tile.Primitive.Mesh.Indices)
+				{
+					bw.Write(idx);
+				}
+
+				// Texture data
+				bw.Write((ushort) tile.Primitive.Texture.Width);
+				bw.Write((ushort) tile.Primitive.Texture.Height);
+
+				foreach (var pixel in tile.Primitive.Texture.Pixels)
+				{
+					bw.Write(pixel);  // ARGB uint32
+				}
+			}
+			else
+			{
+				// No render data (e.g., Air tile)
+				bw.Write((uint) 0);  // vertex_count = 0
+				bw.Write((uint) 0);  // index_count = 0
+				bw.Write((ushort) 0); // texture width = 0
+				bw.Write((ushort) 0); // texture height = 0
+			}
 		}
 
 		private static bool WriteGeometry(AreaDocument doc)
@@ -38,9 +139,10 @@ namespace Glyphborn.Mapper.Editor
 				for (int areaY = 0; areaY < doc.Height; areaY++)
 					for (int areaX = 0; areaX < doc.Width; areaX++)
 					{
-						string geometryPath = Path.Combine(Maps, $"{doc.Name}_{areaX}_{areaY}", $"geometry.bin");
+						var name = doc.Name.ToLower().Replace(' ', '_').Replace('-', '_');
 
-						var dir = Path.GetDirectoryName(geometryPath) ?? Maps;
+						string geometryPath = Path.Combine(Layouts, $"{name}_{areaX}_{areaY}", $"geometry.bin");
+						var dir = Path.GetDirectoryName(geometryPath) ?? Layouts;
 						if (!Directory.Exists(dir))
 							Directory.CreateDirectory(dir);
 
@@ -69,15 +171,13 @@ namespace Glyphborn.Mapper.Editor
 									}
 						}
 					}
+
+				result = true;
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show(ex.Message);
 				result = false;
-			}
-			finally
-			{
-				result = true;
 			}
 
 			return result;
@@ -92,8 +192,10 @@ namespace Glyphborn.Mapper.Editor
 				for (int areaY = 0; areaY < doc.Height; areaY++)
 					for (int areaX = 0; areaX < doc.Width; areaX++)
 					{
-						string collisionPath = Path.Combine(Maps, $"{doc.Name}_{areaX}_{areaY}", "collision.bin");
-						var dir = Path.GetDirectoryName(collisionPath) ?? Maps;
+						var name = doc.Name.ToLower().Replace(' ', '_').Replace('-', '_');
+
+						string collisionPath = Path.Combine(Layouts, $"{name}_{areaX}_{areaY}", "collision.bin");
+						var dir = Path.GetDirectoryName(collisionPath) ?? Layouts;
 						if (!Directory.Exists(dir))
 							Directory.CreateDirectory(dir);
 
@@ -122,15 +224,13 @@ namespace Glyphborn.Mapper.Editor
 									}
 						}
 					}
+
+				result = true;
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show(ex.Message);
 				result = false;
-			}
-			finally
-			{
-				result = true;
 			}
 
 			return result;

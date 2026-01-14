@@ -239,8 +239,8 @@ namespace Glyphborn.Mapper.Controls
 
 		private void DrawGrid(Graphics g, int tileSize, int ox, int oy)
 		{
-			using var pen1 = new Pen(Color.FromArgb(80, Color.Crimson));
-			using var pen2 = new Pen(Color.FromArgb(80, Color.White));
+			using var pen1 = new Pen(Color.FromArgb(80, Color.Crimson), 3f);
+			using var pen2 = new Pen(Color.FromArgb(80, Color.White), 1f);
 
 			int mapW = MapDocument.WIDTH * tileSize;
 			int mapH = MapDocument.HEIGHT * tileSize;

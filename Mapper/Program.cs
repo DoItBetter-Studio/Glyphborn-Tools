@@ -5,6 +5,8 @@ namespace Glyphborn.Mapper
 {
     internal static class Program
     {
+		const string LOCAL_VERSION	= "1.0.0";
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>

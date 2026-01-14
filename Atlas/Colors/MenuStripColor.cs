@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace Glyphborn.Mapper.Colors
+namespace Atlas.Colors
 {
 	public class MenuStripColor : ProfessionalColorTable
 	{
@@ -20,7 +20,6 @@ namespace Glyphborn.Mapper.Colors
 		public override Color MenuItemSelected => Color.FromArgb(62, 62, 64);
 		public override Color MenuItemSelectedGradientBegin => Color.FromArgb(62, 62, 64);
 		public override Color MenuItemSelectedGradientEnd => Color.FromArgb(62, 62, 64);
-
 
 		// The border of the selection box
 		public override Color MenuItemBorder => Color.FromArgb(0, 122, 204);

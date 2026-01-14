@@ -154,14 +154,10 @@ namespace Glyphborn.Mapper
 			createBtn.FlatAppearance.BorderSize = 1;
 			createBtn.Click += OnCreateMap;
 
-			// EDIT!
-
 			var bottom = new Panel { Dock = DockStyle.Fill };
 			bottom.Controls.Add(_enableInterior);
 			bottom.Controls.Add(createTilesetBtn);
 			bottom.Controls.Add(createBtn);
-
-			// END EDIT!
 
 			root.Controls.Add(bottom, 0, 2);
 			root.SetColumnSpan(bottom, 3);

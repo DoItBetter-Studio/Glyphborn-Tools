@@ -5,7 +5,7 @@ VisualStudioVersion = 17.14.36327.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mapper", "Mapper\Mapper.csproj", "{912CEB88-82A3-45A4-A404-6B4228695D2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Matrix Editor", "Matrix Editor\Matrix Editor.csproj", "{4AD2A1D2-6945-42DE-88BC-031B15717DF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas", "Atlas\Atlas.csproj", "{4AD2A1D2-6945-42DE-88BC-031B15717DF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -168,7 +168,7 @@ namespace Glyphborn.Mapper
 			// 
 			// viewToolStripMenuItem
 			// 
-			viewToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { showGridToolStripMenuItem, showTilePropertiesToolStripMenuItem, layerOverlayToolStripMenuItem, dViewToolStripMenuItem });
+			viewToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { showGridToolStripMenuItem, dViewToolStripMenuItem });
 			viewToolStripMenuItem.Name = "viewToolStripMenuItem";
 			viewToolStripMenuItem.Size = new Size(44, 20);
 			viewToolStripMenuItem.Text = "View";

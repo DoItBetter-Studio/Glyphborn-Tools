@@ -53,16 +53,11 @@ namespace Glyphborn.Mapper.Editor
 
 					if (map == null)
 					{
-						// Write default / empty tiles for missing maps so layout matches LoadBinary.
-						for (int layers = 0; layers < MapDocument.LAYERS; layers++)
-						for (int y = 0; y < MapDocument.HEIGHT; y++)
-						for (int x = 0; x < MapDocument.WIDTH; x++)
-						{
-							bw.Write((ushort)0);
-						}
-
+						bw.Write((byte) 0);
 						continue;
 					}
+
+					bw.Write((byte) 1);
 
 					for (int layers = 0; layers < MapDocument.LAYERS; layers++)
 					for (int y = 0; y < MapDocument.HEIGHT; y++)
@@ -116,11 +111,19 @@ namespace Glyphborn.Mapper.Editor
 				doc.Tilesets.Add(TilesetSerializer.LoadBinary(tilesetPath));
 			}
 
-			// Maps
+			// Layouts
 			for (int ay = 0; ay < doc.Height; ay++)
 			for (int ax = 0; ax < doc.Width; ax++)
 			{
 				var map = new MapDocument();
+
+				byte exists = br.ReadByte();
+
+				if (exists == 0)
+				{
+					doc.SetMap(ax, ay, null);
+					continue;
+				}
 
 				for (int l = 0; l < MapDocument.LAYERS; l++)
 				for (int y = 0; y < MapDocument.HEIGHT; y++)

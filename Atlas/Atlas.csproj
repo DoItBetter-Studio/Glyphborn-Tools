@@ -3,10 +3,10 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0-windows</TargetFramework>
-    <RootNamespace>Matrix_Editor</RootNamespace>
+    <RootNamespace>Atlas</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <BaseOutputPath>$(SolutionDir)..\Glyphborn\tools\atlas</BaseOutputPath>
   </PropertyGroup>
 
 </Project>

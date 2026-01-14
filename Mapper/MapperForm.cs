@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using System.Security.Cryptography;
 using System.Windows.Forms;
 
 using Glyphborn.Mapper.Colors;
@@ -130,9 +129,22 @@ namespace Glyphborn.Mapper
 			var areaPanel = new Panel
 			{
 				Dock = DockStyle.Fill,
-				AutoScroll = true,
-				BackColor = Color.FromArgb(30, 30, 30)
+				BackColor = Color.FromArgb(30, 30, 30),
 			};
+
+			var areaContainer = new Panel
+			{
+				AutoScroll = true,
+				BorderStyle = BorderStyle.Fixed3D
+			};
+
+			areaPanel.Resize += (_, __) =>
+			{
+				int size = areaPanel.Width;
+				areaContainer.Size = new Size(size, size);
+			};
+
+			areaPanel.Controls.Add(areaContainer);
 
 			_areaControl = new AreaControl();
 			_areaControl.State = _editorState;
@@ -146,7 +158,7 @@ namespace Glyphborn.Mapper
 				SetActiveMap(map);
 			};
 
-			areaPanel.Controls.Add(_areaControl);
+			areaContainer.Controls.Add(_areaControl);
 			root.Controls.Add(areaPanel, 3, 0);
 
 			_clientHost.Controls.Add(root);
@@ -293,7 +305,37 @@ namespace Glyphborn.Mapper
 			if (omd.ShowDialog() == DialogResult.OK)
 			{
 				_areaDocument = omd.AreaDocument;
-				SetActiveMap(_areaDocument!.GetMap(0, 0)!);
+
+				byte activeMapX = 0;
+				byte activeMapY = 0;
+				bool found = false;
+
+				for (byte y = 0; y < _areaDocument!.Height; y++)
+				{
+					for (byte x = 0; x < _areaDocument.Width; x++)
+					{
+						if (_areaDocument.GetMap(x, y) != null)
+						{
+							activeMapX = x;
+							activeMapY = y;
+							found = true;
+							break;
+						}
+					}
+
+					if (found)
+						break;
+				}
+
+				if (!found)
+				{
+					MessageBox.Show("This area contains no maps.");
+					return;
+				}
+
+				SetActiveMap(_areaDocument.GetMap(activeMapX, activeMapY)!);
+				_editorState.ActiveMapX = activeMapX;
+				_editorState.ActiveMapY = activeMapY;
 
 				saveMapToolStripMenuItem.Enabled = true;
 				saveMapAsToolStripMenuItem.Enabled = true;
